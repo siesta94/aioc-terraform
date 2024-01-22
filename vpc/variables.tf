@@ -40,11 +40,11 @@ variable "azs" {
 
 variable "single_nat_gateway" {
   type = string
-  default = "true"
+  default = "false"
 }
 variable "enable_nat_gateway" {
   type = string
-  default = "true"
+  default = "false"
 }
 
 variable "enable_vpn_gateway" {
