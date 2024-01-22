@@ -37,7 +37,7 @@ variable "allocated_storage" {
 
 variable "instance_class" {
   type    = string
-  default = "db.t3a.small"
+  default = "db.t3.small"
 }
 
 variable "db_name" {
