@@ -17,6 +17,7 @@ module "vpc" {
 
 # DB subnets if neccessery
   create_database_subnet_group	= var.create_database_subnet_group
+  database_subnets = var.database_subnets
 
   tags = {
     Terraform = "true"

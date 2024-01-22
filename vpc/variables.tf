@@ -71,7 +71,7 @@ variable "create_database_subnet_group" {
   default = true
 }
 
-variable "database_subnets_cidr_blocks" {
+variable "database_subnets" {
   type = list(string)
   default = ["10.0.21.0/24", "10.0.22.0/24"]
 }
