@@ -1,4 +1,9 @@
 output "database_subnets" {
   value = module.vpc.database_subnets
-  description = "DB subnets for different module"
+  description = "DB subnets for different modules"
+}
+
+output "vpc_id" {
+  value = module.vpc.default_vpc_id
+  description = "VPC ID for different modules"
 }
