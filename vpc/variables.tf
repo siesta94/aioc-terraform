@@ -39,31 +39,31 @@ variable "azs" {
 }
 
 variable "single_nat_gateway" {
-  type = string
-  default = "false"
+  type = bool
+  default = false
 }
 variable "enable_nat_gateway" {
-  type = string
-  default = "false"
+  type = bool
+  default = false
 }
 
 variable "enable_vpn_gateway" {
-  type = string
-  default = "false"
+  type = bool
+  default = false
 }
 
 variable "enable_dns_hostnames" {
-  type = string
-  default = "true"
+  type = bool
+  default = true
 }
 
 variable "enable_dns_support" {
-  type = string
-  default = "true"
+  type = bool
+  default = true
 }
 variable "reuse_nat_ips" {
-  type = string
-  default = "true"
+  type = bool
+  default = true
 }
 
 variable "create_database_subnet_group" {
