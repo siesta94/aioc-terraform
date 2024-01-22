@@ -15,7 +15,7 @@ module "db" {
 
   iam_database_authentication_enabled = true
 
-  vpc_security_group_ids = module.rds_sg.security_group_id
+  vpc_security_group_ids = module.rds_sg.rds_sg.security_group_id
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
