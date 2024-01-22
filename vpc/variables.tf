@@ -68,7 +68,7 @@ variable "reuse_nat_ips" {
 
 variable "create_database_subnet_group" {
   type = bool
-  default = false
+  default = true
 }
 
 variable "database_subnets_cidr_blocks" {
