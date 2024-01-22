@@ -16,7 +16,6 @@ module "vpc" {
   reuse_nat_ips = var.reuse_nat_ips
 
 # DB subnets if neccessery
-# Trigger
   create_database_subnet_group	= var.create_database_subnet_group
   database_subnets = var.database_subnets
 
