@@ -40,7 +40,7 @@ variable "azs" {
 
 variable "single_nat_gateway" {
   type = bool
-  default = false
+  default = true
 }
 variable "enable_nat_gateway" {
   type = bool
