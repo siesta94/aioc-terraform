@@ -22,12 +22,12 @@ variable "cluster_name" {
 
 variable "node_group_name" {
   type    = string
-  default = "customer-01-node-group-01"
+  default = "node-group-01"
 }
 
 variable "instance_types" {
-  type    = string
-  default = "t3.medium"
+  type    = list(string)
+  default = ["t3.medium"]
 }
 
 variable "cluster_version" {
