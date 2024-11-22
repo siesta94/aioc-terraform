@@ -18,6 +18,7 @@ jobs:
       - name: Get modules that changed
         id: modules-to-deploy
         run: |
+          ls -latrh
           # Get the list of changed files between the current commit and the previous commit
           changed_files=`git diff-tree --no-renames --no-commit-id --name-only -r "${GITHUB_SHA}^..HEAD"`
           changed_files=`echo $changed_files| sed 's/ /,/g'` #replace space with comma
