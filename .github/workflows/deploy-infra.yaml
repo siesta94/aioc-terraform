@@ -9,7 +9,46 @@ on:
       - main  # Trigger on pull requests targeting the 'main' branch
 
 jobs:
-  terraform:
+  modules-to-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get modules that changed
+        id: modules-to-deploy
+        run: |
+          # Get the list of changed files between the current commit and the previous commit
+          changed_files=$(git diff --name-only HEAD~1 HEAD)
+
+          # Define the list of module directories to check against
+          modules=$(ls -d */ | sed 's#/##')  # Adjust this list to match your actual module directories
+
+          # Loop through each module and check if any files in the module directory were changed
+          changed_modules=()
+          for module in "${modules[@]}"; do
+            for file in $changed_files; do
+              if [[ $file == $module/* ]]; then
+                changed_modules+=("$module")
+                break
+              fi
+            done
+          done
+
+          # If any modules were changed, print them
+          if [ ${#changed_modules[@]} -gt 0 ]; then
+            echo "Changed modules:"
+            for module in "${changed_modules[@]}"; do
+              echo "- $module"
+            done
+          else
+            echo "No module directories were changed."
+          fi
+    outputs:
+      MODULES: ${{ steps.get-modules.outputs.modules }}
+
+  terraform-deploy:
+    needs: modules-to-deploy
     runs-on: ubuntu-latest
 
     # Cache Terraform dependencies to speed up the workflow
@@ -45,14 +84,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: "us-east-1"          
 
-    - name: Terraform Init
-      run: terraform init
-
-    - name: Terraform Plan
-      run: terraform plan -out=tfplan
-
-    # - name: Terraform Apply
-    #   run: terraform apply -auto-approve tfplan
-
-    # - name: Terraform Output
-    #   run: terraform output
+    - name: Terraform Init Modules
+      env: 
+        MODULES: ${{ needs.modules-to-deploy.outputs.MODULES }}
+      run: |
+        echo $MODULES
