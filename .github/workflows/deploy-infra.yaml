@@ -9,48 +9,7 @@ on:
       - main  # Trigger on pull requests targeting the 'main' branch
 
 jobs:
-  modules-to-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Get modules that changed
-        id: modules-to-deploy
-        run: |
-          ls -latrh
-          # Get the list of changed files between the current commit and the previous commit
-          changed_files=`git diff-tree --no-renames --no-commit-id --name-only -r "${GITHUB_SHA}^..HEAD"`
-          changed_files=`echo $changed_files| sed 's/ /,/g'` #replace space with comma
-
-          # Define the list of module directories to check against
-          modules=$(ls -d */ | sed 's#/##')  # Adjust this list to match your actual module directories
-
-          # Loop through each module and check if any files in the module directory were changed
-          changed_modules=()
-          for module in "${modules[@]}"; do
-            for file in $changed_files; do
-              if [[ $file == $module/* ]]; then
-                changed_modules+=("$module")
-                break
-              fi
-            done
-          done
-
-          # If any modules were changed, print them
-          if [ ${#changed_modules[@]} -gt 0 ]; then
-            echo "Changed modules:"
-            for module in "${changed_modules[@]}"; do
-              echo "- $module"
-            done
-          else
-            echo "No module directories were changed."
-          fi
-    outputs:
-      MODULES: ${{ steps.get-modules.outputs.modules }}
-
   terraform-deploy:
-    needs: modules-to-deploy
     runs-on: ubuntu-latest
 
     # Cache Terraform dependencies to speed up the workflow
@@ -84,10 +43,15 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: "us-east-1"          
-
-    - name: Terraform Init Modules
-      env: 
-        MODULES: ${{ needs.modules-to-deploy.outputs.MODULES }}
+        aws-region: "us-east-1"
+    
+    - name: Terraform Init
       run: |
-        echo $MODULES
+        modules=$(ls -d */ | sed 's#/##')
+        for module in $modules; do
+          cd $module
+          terraform init
+          echo "--------------------------------"
+          echo "Successfully initialized $module"
+          cd ..
+        done
