@@ -1,0 +1,58 @@
+name: Deploy Terraform Modules
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the 'main' branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the 'main' branch
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    # Cache Terraform dependencies to speed up the workflow
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: '1.5.0'  # Specify the Terraform version you are using
+
+    - name: Cache Terraform providers
+      uses: actions/cache@v4
+      with:
+        path: ~/.terraform.d/plugins
+        key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
+
+    - name: Cache Terraform modules
+      uses: actions/cache@v4
+      with:
+        path: .terraform
+        key: ${{ runner.os }}-terraform-modules-${{ hashFiles('**/*.tf') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-modules-
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: "us-east-1"          
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+
+    # - name: Terraform Apply
+    #   run: terraform apply -auto-approve tfplan
+
+    # - name: Terraform Output
+    #   run: terraform output
